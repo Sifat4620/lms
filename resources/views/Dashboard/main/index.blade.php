@@ -1,5 +1,6 @@
 @extends('Dashboard.main.master')
 @section('content')
+<div class="content-body">
     <div class="container">
         <div class="row page-titles">
             <div class="col p-0">
@@ -50,4 +51,5 @@
             </div>
         </div>
     </div>
+</div>
 @endsection

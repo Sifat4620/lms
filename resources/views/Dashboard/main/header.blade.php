@@ -24,13 +24,31 @@
                 </li>
             </ul>
         </div>
-        {{-- <div class="header-right">
+
+        <!-- Move the account icon to the right -->
+        <div class="header-right ml-auto"> <!-- ml-auto will push the element to the right -->
             <ul>
-                <!-- Notification and Messages -->
-                @include('partials.notifications')
-                @include('partials.messages')
-                @include('partials.tasks')
+                <li class="icons">
+                    <a href="javascript:void(0)">
+                        <i class="mdi mdi-account f-s-20" aria-hidden="true"></i>
+                    </a>
+                    <div class="drop-down dropdown-profile animated bounceInDown">
+                        <div class="dropdown-content-body">
+                            <ul>
+                                <!-- Logout Form -->
+                                <li>
+                                    <form action="{{ route('logout') }}" method="POST">
+                                        @csrf
+                                        <button type="submit" style="background: none; border: none; color: inherit; cursor: pointer;">
+                                            <i class="icon-power"></i> <span>Logout</span>
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
             </ul>
-        </div> --}}
+        </div>
     </div>
 </div>
