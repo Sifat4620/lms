@@ -5,71 +5,93 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Ameen - Bootstrap Admin Dashboard HTML Template</title>
+    <title>Login</title>
     <!-- Favicon icon -->
-    <link rel="icon" type="image/png" sizes="16x16" href="../../assets/images/favicon.png">
+    <link rel="icon" href="{{ asset('assets/images/favicon.ico') }}" type="image/x-icon">
+
     <!-- Custom Stylesheet -->
-    <link href="../css/style.css" rel="stylesheet">
-    <script src="../js/modernizr-3.6.0.min.js"></script>
+    <link href="{{ asset('css/style.css') }}" rel="stylesheet">
+    <script src="{{ asset('js/modernizr.3.6.0.min.js') }}"></script>
 </head>
 
 <body class="h-100">
+    <!-- Preloader -->
     <div id="preloader">
         <div class="loader">
-            <svg class="circular" viewBox="25 25 50 50"><circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="3" stroke-miterlimit="10"/></svg>
+            <svg class="circular" viewBox="25 25 50 50">
+                <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="3" stroke-miterlimit="10"/>
+            </svg>
         </div>
     </div>
+
     <div class="login-bg h-100">
         <div class="container h-100">
-            <div class="row justify-content-center h-100">
-                <div class="col-xl-6">
+            <div class="row justify-content-center align-items-center h-100">
+                <div class="col-xl-6 col-lg-8 col-md-10">
                     <div class="form-input-content">
                         <div class="card">
                             <div class="card-body">
-                                <div class="logo text-center">
-                                    <a href="index.html">
-                                        <img src="../../assets/images/f-logo.png" alt="">
-                                    </a>
+                                <!-- Logo Section -->
+                                <div class="logo text-center mt-4">
+                                    
+                                        library management system 
+                               
                                 </div>
-                                <h4 class="text-center m-t-15">Log into Your Account</h4>
-                                <form class="m-t-30 m-b-30">
+                                
+                                <!-- Login Form Heading -->
+                                <h4 class="text-center mt-3">Log into Your Account</h4>
+
+                                <!-- Form Starts Here -->
+                                <form class="m-t-30 m-b-30" method="POST" action="{{ route('login') }}">
+                                    @csrf
+
+                                    <!-- User Input -->
                                     <div class="form-group">
-                                        <label>Email</label>
-                                        <input type="email" class="form-control" placeholder="Email">
+                                        <label for="username">User Name</label>
+                                        <input type="text" class="form-control @error('username') is-invalid @enderror" id="username" name="username" placeholder="User Name" value="{{ old('username') }}" required autofocus>
+                                        @error('username')
+                                            <span class="invalid-feedback" role="alert">
+                                                <strong>{{ $message }}</strong>
+                                            </span>
+                                        @enderror
                                     </div>
+                                    
+
+                                    <!-- Password Input -->
                                     <div class="form-group">
-                                        <label>Password</label>
-                                        <input type="password" class="form-control" placeholder="Password">
+                                        <label for="password">Password</label>
+                                        <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" placeholder="Password" required>
+                                        @error('password')
+                                            <span class="invalid-feedback" role="alert">
+                                                <strong>{{ $message }}</strong>
+                                            </span>
+                                        @enderror
                                     </div>
+
+                                    <!-- Remember Me and Forgot Password -->
                                     <div class="form-row">
                                         <div class="form-group col-md-6">
-                                            <div class="form-check p-l-0">
-                                                <input class="form-check-input" type="checkbox" id="basic_checkbox_1">
-                                                <label class="form-check-label" for="basic_checkbox_1">Check me out</label>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="remember" name="remember">
+                                                <label class="form-check-label" for="remember">Remember me</label>
                                             </div>
                                         </div>
-                                        <div class="form-group col-md-6 text-right"><a href="#">Forgot Password?</a>
-                                        </div>
+                                        {{-- <div class="form-group col-md-6 text-right">
+                                            <a href="{{ route('password.request') }}" class="text-muted">Forgot Password?</a>
+                                        </div> --}}
                                     </div>
+
+                                    <!-- Submit Button -->
                                     <div class="text-center m-b-15 m-t-15">
-                                        <button type="submit" class="btn btn-primary">Sign in</button>
+                                        <button type="submit" class="btn btn-primary btn-block">Sign in</button>
                                     </div>
                                 </form>
-                                <div class="text-center">
-                                    <h5 class="m-b-30">Or with Login</h5>
-                                    <ul class="list-inline">
-                                        <li class="list-inline-item m-t-10"><a href="#" class="btn btn-facebook"><i class="fa fa-facebook"></i></a>
-                                        </li>
-                                        <li class="list-inline-item m-t-10"><a href="#" class="btn btn-twitter"><i class="fa fa-twitter"></i></a>
-                                        </li>
-                                        <li class="list-inline-item m-t-10"><a href="#" class="btn btn-linkedin"><i class="fa fa-linkedin"></i></a>
-                                        </li>
-                                        <li class="list-inline-item m-t-10"><a href="#" class="btn btn-google-plus"><i class="fa fa-google-plus"></i></a>
-                                        </li>
-                                    </ul>
-                                    <p class="m-t-30">Dont have an account? <a href="#">Register Now</a>
-                                    </p>
-                                </div>
+                                <!-- Form Ends Here -->
+
+                                <!-- Alternative Login Options (Social Media or Others) -->
+                                {{-- <div class="text-center">
+                                    <p class="m-t-30">Don't have an account? <a href="{{ route('register') }}">Register Now</a></p>
+                                </div> --}}
                             </div>
                         </div>
                     </div>
@@ -77,11 +99,12 @@
             </div>
         </div>
     </div>
-    <!-- #/ container -->
+
     <!-- Common JS -->
-    <script src="../../assets/plugins/common/common.min.js"></script>
-    <!-- Custom script -->
-    <script src="../js/custom+mini-nav.js"></script>
+    <script src="{{ asset('assets/plugins/common/common.min.js') }}"></script>
+
+    <!-- Custom JS -->
+    <script src="{{ asset('js/custom.mini.nav.js') }}"></script>
 </body>
 
 </html>

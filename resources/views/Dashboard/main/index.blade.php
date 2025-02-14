@@ -1,4 +1,3 @@
-<!-- resources/views/index.blade.php -->
 @extends('Dashboard.main.master')
 @section('content')
     <div class="container">
