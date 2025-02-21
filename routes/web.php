@@ -3,11 +3,12 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\BookController;
-use App\Http\Controllers\StudentController;  // Correct import
+use App\Http\Controllers\StudentController; 
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\Auth\AuthManagerController;
 use App\Http\Controllers\BookListController;  
+use App\Http\Controllers\Auth\RegisterController;
 
 // Show login form
 Route::get('/login', [AuthManagerController::class, 'showLoginForm'])->name('login');
@@ -17,6 +18,12 @@ Route::post('/login', [AuthManagerController::class, 'login'])->name('login.subm
 
 // Logout route
 Route::post('/logout', [AuthManagerController::class, 'logout'])->name('logout');
+
+// Show registration form
+Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+
+// Handle registration form submission
+Route::post('/register', [RegisterController::class, 'register'])->name('register.submit');
 
 // Main route: Simply show the login page for unauthenticated users
 Route::get('/', function () {

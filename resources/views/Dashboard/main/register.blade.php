@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" class="h-100" id="login-page1">
+<html lang="en" class="h-100" id="register-page1">
 
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Login</title>
+    <title>Register</title>
     <!-- Favicon icon -->
     <link rel="icon" href="{{ asset('assets/images/favicon.ico') }}" type="image/x-icon">
 
@@ -33,29 +33,37 @@
                             <div class="card-body">
                                 <!-- Logo Section -->
                                 <div class="logo text-center mt-4">
-                                    
-                                        library management system 
-                               
+                                    Library Management System
                                 </div>
-                                
-                                <!-- Login Form Heading -->
-                                <h4 class="text-center mt-3">Log into Your Account</h4>
+
+                                <!-- Register Form Heading -->
+                                <h4 class="text-center mt-3">Create Your Account</h4>
 
                                 <!-- Form Starts Here -->
-                                <form class="m-t-30 m-b-30" method="POST" action="{{ route('login') }}">
+                                <form class="m-t-30 m-b-30" method="POST" action="{{ route('register.submit') }}">
                                     @csrf
 
-                                    <!-- User Input -->
+                                    <!-- Username Input -->
                                     <div class="form-group">
-                                        <label for="username">User Name</label>
-                                        <input type="text" class="form-control @error('username') is-invalid @enderror" id="username" name="username" placeholder="User Name" value="{{ old('username') }}" required autofocus>
+                                        <label for="username">Username</label>
+                                        <input type="text" class="form-control @error('username') is-invalid @enderror" id="username" name="username" placeholder="Username" value="{{ old('username') }}" required autofocus>
                                         @error('username')
                                             <span class="invalid-feedback" role="alert">
                                                 <strong>{{ $message }}</strong>
                                             </span>
                                         @enderror
                                     </div>
-                                    
+
+                                    <!-- Name Input -->
+                                    <div class="form-group">
+                                        <label for="name">Full Name</label>
+                                        <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" placeholder="Full Name" value="{{ old('name') }}" required>
+                                        @error('name')
+                                            <span class="invalid-feedback" role="alert">
+                                                <strong>{{ $message }}</strong>
+                                            </span>
+                                        @enderror
+                                    </div>
 
                                     <!-- Password Input -->
                                     <div class="form-group">
@@ -68,29 +76,22 @@
                                         @enderror
                                     </div>
 
-                                    <!-- Remember Me and Forgot Password -->
-                                    <div class="form-row">
-                                        <div class="form-group col-md-6">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" id="remember" name="remember">
-                                                <label class="form-check-label" for="remember">Remember me</label>
-                                            </div>
-                                        </div>
-                                        {{-- <div class="form-group col-md-6 text-right">
-                                            <a href="{{ route('password.request') }}" class="text-muted">Forgot Password?</a>
-                                        </div> --}}
+                                    <!-- Confirm Password Input -->
+                                    <div class="form-group">
+                                        <label for="password_confirmation">Confirm Password</label>
+                                        <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="Confirm Password" required>
                                     </div>
 
                                     <!-- Submit Button -->
                                     <div class="text-center m-b-15 m-t-15">
-                                        <button type="submit" class="btn btn-primary btn-block">Sign in</button>
+                                        <button type="submit" class="btn btn-primary btn-block">Register</button>
                                     </div>
                                 </form>
                                 <!-- Form Ends Here -->
 
-                                <!-- Alternative Login Options (Social Media or Others) -->
+                                <!-- Alternative Option: Already have an account? -->
                                 <div class="text-center">
-                                    <p class="m-t-30">Don't have an account? <a href="{{ route('register') }}">Register Now</a></p>
+                                    <p class="m-t-30">Already have an account? <a href="{{ route('login') }}">Login Now</a></p>
                                 </div>
                             </div>
                         </div>
