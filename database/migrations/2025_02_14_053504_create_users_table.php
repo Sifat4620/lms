@@ -5,6 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class CreateUsersTable extends Migration
 {
@@ -15,20 +16,24 @@ class CreateUsersTable extends Migration
      */
     public function up()
     {
-        // Create the users table with 'username' column
         Schema::create('users', function (Blueprint $table) {
-            $table->id(); // Auto-incrementing primary key
-            $table->string('username')->unique(); // User's username (unique)
-            $table->string('name'); // User's name (if you need a separate name field)
-            $table->string('password'); // User's password (hashed)
-            $table->timestamps(); // created_at and updated_at
+            $table->id(); // Primary Key
+            $table->string('username')->unique(); // Unique Username
+            $table->string('name'); // Full Name
+            $table->string('password'); // Hashed Password
+            $table->enum('role', ['admin', 'student'])->default('student'); // User Role
+            $table->rememberToken(); // Token for session-based authentication
+            $table->string('api_token', 80)->nullable()->unique(); // Token for API authentication (Optional)
+            $table->timestamps(); // created_at & updated_at
         });
 
-        // Automatically create an admin account
+        // Insert default admin user with token
         DB::table('users')->insert([
-            'username' => 'admin', // Set username as 'admin'
-            'name' => 'Admin', // Set the name of the admin
-            'password' => Hash::make('123456'), // Hash the password for security
+            'username' => 'admin', 
+            'name' => 'Admin', 
+            'password' => Hash::make('Admin@123'), // Secure Password
+            'role' => 'admin', 
+            'api_token' => Str::random(60), // Generate a random API token
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -41,7 +46,6 @@ class CreateUsersTable extends Migration
      */
     public function down()
     {
-        // Drop the 'users' table if rolled back
         Schema::dropIfExists('users');
     }
 }
