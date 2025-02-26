@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use App\Models\User;
 use App\Http\Controllers\Controller;
@@ -16,9 +17,60 @@ class AuthManagerController extends Controller
     public function showLoginForm()
     {
         if (Auth::check()) {
-            return redirect()->route('dashboard'); // Redirect if already logged in
+            return redirect()->route('index'); // Redirect if already logged in
         }
         return view('Dashboard.main.page-login');
+    }
+
+    // Show registration form (if the user is not logged in)
+    public function showRegistrationForm()
+    {
+        if (Auth::check()) {
+            return redirect()->route('index'); // Redirect if already logged in
+        }
+        return view('Dashboard.main.page-register');
+    }
+
+    // Handle registration request
+    public function register(Request $request)
+    {
+        // Validate the request input
+        $validator = Validator::make($request->all(), [
+            'username' => 'required|string|unique:users,username',
+            'name' => 'required|string',
+            'password' => 'required|string|min:6|confirmed',
+            'role' => 'required|in:admin,student',  // Ensure the role is either admin or student
+        ]);
+
+        // If validation fails, return to the registration form with errors
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        // Create the user
+        $user = User::create([
+            'username' => $request->username,
+            'name' => $request->name,
+            'password' => Hash::make($request->password),
+            'role' => $request->role,  // Assign role based on user input
+        ]);
+
+        // Generate a new API token for the user
+        $user->api_token = Str::random(60);
+        $user->save();
+
+        // Log the user registration event
+        Log::info('User registered', ['username' => $user->username, 'role' => $user->role]);
+
+        // Log the user in after registration
+        Auth::login($user);
+
+        // Redirect the user based on their role
+        if ($user->role === 'admin') {
+            return redirect()->route('index')->with('success', 'Welcome Admin!');
+        } else {
+            return redirect()->route('student.profile')->with('success', 'Welcome Student!');
+        }
     }
 
     // Handle login request
@@ -39,14 +91,17 @@ class AuthManagerController extends Controller
 
         // Check if user exists and password is correct
         if ($user && Hash::check($request->password, $user->password)) {
-            // Log in the user
+            // Log the user in
             Auth::login($user);
 
-            // Generate new API token on login
+            // Generate new API token for the user on login
             $user->api_token = Str::random(60);
             $user->save();
 
-            // Redirect user based on role
+            // Log the user login event
+            Log::info('User logged in', ['username' => $user->username, 'role' => $user->role]);
+
+            // Redirect the user based on their role
             if ($user->role === 'admin') {
                 return redirect()->route('index')->with('success', 'Welcome Admin!');
             } else {
@@ -61,21 +116,24 @@ class AuthManagerController extends Controller
     // Handle API-based login (for mobile or API clients)
     public function apiLogin(Request $request)
     {
-        // Validate request
+        // Validate request input
         $request->validate([
             'username' => 'required|string',
             'password' => 'required|string|min:6',
         ]);
 
-        // Find user
+        // Find user by username
         $user = User::where('username', $request->username)->first();
 
-        // Check credentials
+        // Check if credentials are valid
         if ($user && Hash::check($request->password, $user->password)) {
-            // Generate API token
+            // Generate API token for the user
             $token = Str::random(60);
             $user->api_token = $token;
             $user->save();
+
+            // Log API login event
+            Log::info('API login successful', ['username' => $user->username]);
 
             return response()->json([
                 'message' => 'Login successful',
@@ -84,6 +142,7 @@ class AuthManagerController extends Controller
             ], 200);
         }
 
+        // Return error if credentials are invalid
         return response()->json(['message' => 'Invalid credentials'], 401);
     }
 

@@ -3,11 +3,11 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\BookController;
-use App\Http\Controllers\StudentController; 
+use App\Http\Controllers\StudentController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\Auth\AuthManagerController;
-use App\Http\Controllers\BookListController;  
+use App\Http\Controllers\BookListController;
 use App\Http\Controllers\Auth\RegisterController;
 
 // Show login form
@@ -32,20 +32,38 @@ Route::get('/', function () {
 
 // Routes protected by authentication middleware
 Route::middleware(['auth'])->group(function () {
-    // Index Page Route (Dashboard)
+    
+    // Index Page Route (Dashboard) - Accessible by both admin and student
     Route::get('/index', [IndexController::class, 'index'])->name('index');
-    
-    // Book Routes
-    Route::get('/book-form', [BookController::class, 'showFormValidation'])->name('book.form');
 
+    // --- Admin Routes (Protected by 'role:admin') ---
+    Route::middleware(['role:admin'])->group(function () {
+        // Book Routes (Admin-only)
+        Route::get('/book-form', [BookController::class, 'showFormValidation'])->name('book.form');
+        Route::get('/books', [BookListController::class, 'index'])->name('books.index');
 
-    Route::get('/books', [BookListController::class, 'index'])->name('books.index');
-    
-    Route::get('/students', [StudentController::class, 'index'])->name('students.index');
-    
-    // Report Routes
-    Route::get('/reports', [ReportController::class, 'index'])->name('report.index');
-    
-    // Invoice Routes
-    Route::get('/invoice', [InvoiceController::class, 'index'])->name('invoice.index');
+        // Students Routes (Admin-only)
+        Route::get('/students', [StudentController::class, 'index'])->name('students.index');
+
+        // Report Routes (Admin-only)
+        Route::get('/reports', [ReportController::class, 'index'])->name('report.index');
+
+        // Invoice Routes (Admin-only)
+        Route::get('/invoice', [InvoiceController::class, 'index'])->name('invoice.index');
+    });
+
+    // --- Student Routes (Protected by 'role:student') ---
+    Route::middleware(['role:student'])->group(function () {
+        // Student profile route
+        Route::get('/student/profile', [StudentController::class, 'profile'])->name('student.profile'); // Changed to profile()
+
+        // Student borrow book route
+        Route::get('/student/borrow-book', [StudentController::class, 'borrowBook'])->name('student.borrow.book');
+    });
 });
+
+// Unauthorized Page (For access denial)
+Route::get('/unauthorized', function () {
+    return view('errors.unauthorized'); // Create this view to show access denied messages
+})->name('unauthorized');
+

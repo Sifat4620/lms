@@ -6,10 +6,29 @@ use Illuminate\Http\Request;
 
 class StudentController extends Controller
 {
-    // Method to show the student list view
+    /**
+     * Apply middleware to the controller's methods
+     */
+    public function __construct()
+    {
+        $this->middleware(['auth', 'role:student']);
+    }
+
+    /**
+     * Show the student list view
+     */
     public function index()
     {
-        // You can pass data here if needed, for now just return the view
         return view('Dashboard.main.student-list');
+    }
+
+    /**
+     * Show the student profile view
+     */
+    public function profile()
+    {
+        // Debugging: Check the role of the authenticated user
+        // Your normal logic for the profile
+        return view('Dashboard.main.student-profile');
     }
 }

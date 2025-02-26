@@ -13,11 +13,13 @@ class User extends Authenticatable
 
     // Define the columns that are mass-assignable
     protected $fillable = [
-        'username',  // Add 'username' here
+        'username', 
         'name',
         'email',
         'password',
+        'role',  // Add this line to the $fillable array
     ];
+    
 
     // Define the columns that are hidden
     protected $hidden = [
@@ -29,6 +31,11 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+    
+        public function hasRole($role)
+    {
+        return $this->role === $role;  // Checks if the user's role matches the passed role
+    }
 
     // Optionally, if you need custom query scopes, you can define them here.
 }
