@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;  // Add this
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasRoles; // Add HasRoles trait to use Spatie's role and permission system
 
     // Define the columns that are mass-assignable
     protected $fillable = [
@@ -17,9 +18,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role',  // Add this line to the $fillable array
     ];
-    
 
     // Define the columns that are hidden
     protected $hidden = [
@@ -31,11 +30,6 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-    
-        public function hasRole($role)
-    {
-        return $this->role === $role;  // Checks if the user's role matches the passed role
-    }
 
     // Optionally, if you need custom query scopes, you can define them here.
 }

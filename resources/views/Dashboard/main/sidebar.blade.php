@@ -14,8 +14,10 @@
                     <span class="nav-text">Form</span>
                 </a>
                 <ul aria-expanded="false">
-                    <!-- Book Form -->
-                    <li><a href="{{ route('book.form') }}">Book Form</a></li>
+                    <!-- Book Form (Check if the user has permission to manage books) -->
+                    @can('manage books')
+                        <li><a href="{{ route('book.form') }}">Book Form</a></li>
+                    @endcan
                 </ul>
             </li>
 
@@ -26,29 +28,42 @@
                     <span class="nav-text">Table</span>
                 </a>
                 <ul aria-expanded="false">
-                    <!-- Books Table -->
-                    <li><a href="{{ route('books.index') }}">Books</a></li>
-                    <!-- Students Table -->
-                    <li><a href="{{ route('students.index') }}">Students</a></li>
-                    <!-- Report Table -->
-                    <li><a href="{{ route('report.index') }}">Report</a></li>
+                    <!-- Books Table (Check if the user has permission to manage books) -->
+                    @can('manage books')
+                        <li><a href="{{ route('books.index') }}">Books</a></li>
+                    @endcan
+                    
+                    <!-- Students Table (Check if the user has permission to manage students) -->
+                    @can('manage students')
+                        <li><a href="{{ route('students.index') }}">Students</a></li>
+                    @endcan
+                    
+                    <!-- Report Table (Check if the user has permission to view reports) -->
+                    @can('view reports')
+                        <li><a href="{{ route('report.index') }}">Report</a></li>
+                    @endcan
                 </ul>
             </li>
 
-            <!-- Student Profile Link (Added here) -->
-            <li>
-                <a href="{{ route('student.profile') }}">
-                    <i class="mdi mdi-account-circle"></i> 
-                    <span class="nav-text">Profile</span>
-                </a>
-            </li>
+            <!-- Student Profile Link (Always available for students) -->
+            @can('borrow books')
+                <li>
+                    <a href="{{ route('student.profile') }}">
+                        <i class="mdi mdi-account-circle"></i> 
+                        <span class="nav-text">Profile</span>
+                    </a>
+                </li>
+            @endcan
 
             <!-- Invoice Section (commented out) -->
-            {{-- <li><a href="{{ route('invoice') }}">
-                <i class="mdi mdi-square-edit-outline"></i>
-                <span class="nav-text">Invoice Summary</span>
-            </a></li> --}}
-
+            {{-- 
+            <li>
+                <a href="{{ route('invoice') }}">
+                    <i class="mdi mdi-square-edit-outline"></i>
+                    <span class="nav-text">Invoice Summary</span>
+                </a>
+            </li>
+            --}}
         </ul>
     </div>
 </div>

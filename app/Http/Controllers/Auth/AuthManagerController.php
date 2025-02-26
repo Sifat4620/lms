@@ -73,7 +73,6 @@ class AuthManagerController extends Controller
         }
     }
 
-    // Handle login request
     public function login(Request $request)
     {
         // Validate request input
@@ -81,37 +80,42 @@ class AuthManagerController extends Controller
             'username' => 'required|string',
             'password' => 'required|string|min:6',
         ]);
-
+    
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
         }
-
+    
         // Find user by username
         $user = User::where('username', $request->username)->first();
-
+    
         // Check if user exists and password is correct
         if ($user && Hash::check($request->password, $user->password)) {
             // Log the user in
             Auth::login($user);
-
+    
+            // Check user roles and permissions using dd() for debugging
+            dd($user->getRoleNames()); // This will show all roles assigned to the user
+            dd($user->getAllPermissions()); // This will show all permissions assigned to the user
+    
             // Generate new API token for the user on login
             $user->api_token = Str::random(60);
             $user->save();
-
+    
             // Log the user login event
             Log::info('User logged in', ['username' => $user->username, 'role' => $user->role]);
-
+    
             // Redirect the user based on their role
-            if ($user->role === 'admin') {
+            if ($user->hasRole('admin')) {
                 return redirect()->route('index')->with('success', 'Welcome Admin!');
             } else {
                 return redirect()->route('student.profile')->with('success', 'Welcome Student!');
             }
         }
-
+    
         // Return error if login fails
         return back()->withErrors(['message' => 'Invalid credentials'])->withInput();
     }
+    
 
     // Handle API-based login (for mobile or API clients)
     public function apiLogin(Request $request)

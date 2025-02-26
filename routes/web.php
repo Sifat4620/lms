@@ -36,24 +36,30 @@ Route::middleware(['auth'])->group(function () {
     // Index Page Route (Dashboard) - Accessible by both admin and student
     Route::get('/index', [IndexController::class, 'index'])->name('index');
 
-    // --- Admin Routes (Protected by 'role:admin') ---
-    Route::middleware(['role:admin'])->group(function () {
+    // --- Admin Routes (Protected by permissions like 'manage books', 'manage students', etc.) ---
+    Route::middleware(['permission:manage books'])->group(function () {
         // Book Routes (Admin-only)
         Route::get('/book-form', [BookController::class, 'showFormValidation'])->name('book.form');
         Route::get('/books', [BookListController::class, 'index'])->name('books.index');
+    });
 
+    Route::middleware(['permission:manage students'])->group(function () {
         // Students Routes (Admin-only)
         Route::get('/students', [StudentController::class, 'index'])->name('students.index');
+    });
 
+    Route::middleware(['permission:view reports'])->group(function () {
         // Report Routes (Admin-only)
         Route::get('/reports', [ReportController::class, 'index'])->name('report.index');
+    });
 
+    Route::middleware(['permission:manage invoices'])->group(function () {
         // Invoice Routes (Admin-only)
         Route::get('/invoice', [InvoiceController::class, 'index'])->name('invoice.index');
     });
 
-    // --- Student Routes (Protected by 'role:student') ---
-    Route::middleware(['role:student'])->group(function () {
+    // --- Student Routes (Protected by 'permission:borrow books') ---
+    Route::middleware(['permission:borrow books'])->group(function () {
         // Student profile route
         Route::get('/student/profile', [StudentController::class, 'profile'])->name('student.profile'); // Changed to profile()
 
@@ -66,4 +72,3 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/unauthorized', function () {
     return view('errors.unauthorized'); // Create this view to show access denied messages
 })->name('unauthorized');
-

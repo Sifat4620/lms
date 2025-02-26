@@ -21,7 +21,6 @@ class CreateUsersTable extends Migration
             $table->string('username')->unique(); // Unique Username
             $table->string('name'); // Full Name
             $table->string('password'); // Hashed Password
-            $table->enum('role', ['admin', 'student'])->default('student'); // User Role
             $table->rememberToken(); // Token for session-based authentication
             $table->string('api_token', 80)->nullable()->unique(); // Token for API authentication (Optional)
             $table->timestamps(); // created_at & updated_at
@@ -32,7 +31,6 @@ class CreateUsersTable extends Migration
             'username' => 'admin', 
             'name' => 'Admin', 
             'password' => Hash::make('Admin@123'), // Secure Password
-            'role' => 'admin', 
             'api_token' => Str::random(60), // Generate a random API token
             'created_at' => now(),
             'updated_at' => now(),
