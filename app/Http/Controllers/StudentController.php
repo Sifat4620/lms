@@ -9,10 +9,7 @@ class StudentController extends Controller
     /**
      * Apply middleware to the controller's methods
      */
-    public function __construct()
-    {
-        $this->middleware(['auth', 'role:student']);
-    }
+
 
     /**
      * Show the student list view

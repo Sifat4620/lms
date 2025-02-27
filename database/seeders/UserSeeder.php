@@ -7,27 +7,32 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Laratrust\Models\Role;
 
 class UserSeeder extends Seeder
 {
     public function run()
     {
 
-        $user =  User::create([
+        $admin =  User::create([
             'username' => 'admin',
             'name' => 'Admin',
             'email' => 'admin@lms.com',
             'password' => Hash::make('password'), // Or use a secure password
         ]);
-        $user->assignRole('admin');
+
+        $this->call(LaratrustSeeder::class);
+
+        $admin->addRole(Role::whereName('admin')->first());
 
 
-        $user =  User::create([
+
+        $student =  User::create([
             'username' => 'student',
             'name' => 'Student',
             'email' => 'student@lms.com',
             'password' => Hash::make('password'), // Or use a secure password
         ]);
-        $user->assignRole('student');
+        $student->addRole(Role::whereName('student')->first());
     }
 }

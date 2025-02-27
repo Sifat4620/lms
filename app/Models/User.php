@@ -6,11 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Traits\HasRoles;
+use Laratrust\Contracts\LaratrustUser;
+use Laratrust\Traits\HasRolesAndPermissions;
 
-class User extends Authenticatable
+
+class User extends Authenticatable implements LaratrustUser
 {
-    use HasFactory, Notifiable, HasRoles; // Include Spatie's HasRoles trait to handle roles & permissions
+    use HasFactory, Notifiable,HasRolesAndPermissions; // Include Spatie's HasRoles trait to handle roles & permissions
 
     // Define the columns that are mass-assignable
     protected $fillable = [
