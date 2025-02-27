@@ -13,7 +13,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // You can call other seeders here, for example:
-        $this->call(UserSeeder::class); // If you have a UserSeeder
+        // Call both UserSeeder and RolesAndPermissionsSeeder
+        $this->call([
+            UserSeeder::class,  // Seed users
+            RolesAndPermissionsSeeder::class,  // Seed roles and permissions
+        ]);
     }
 }

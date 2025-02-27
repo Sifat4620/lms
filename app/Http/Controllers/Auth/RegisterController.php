@@ -40,18 +40,21 @@ class RegisterController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
-        // Create the user and assign the role as 'student' by default
+        // Create the user without the 'role' field
         $user = User::create([
             'username' => $request->username,
             'name' => $request->name,
             'password' => Hash::make($request->password), // Secure password
-            'role' => 'student', // Default role is 'student'
             'api_token' => Str::random(60), // Generate a random API token for the user
         ]);
+
+        // Assign the role dynamically using Spatie's assignRole method
+        $user->assignRole('student'); // Default role is 'student'
 
         // Redirect to the login page after successful registration
         return redirect()->route('login')->with('success', 'Registration successful! Please log in.');
     }
+
 
     /**
      * Handle the API registration (for mobile or API clients).

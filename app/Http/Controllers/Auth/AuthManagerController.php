@@ -52,8 +52,10 @@ class AuthManagerController extends Controller
             'username' => $request->username,
             'name' => $request->name,
             'password' => Hash::make($request->password),
-            'role' => $request->role,  // Assign role based on user input
         ]);
+
+        // Assign the selected role to the user
+        $user->assignRole($request->role); // This will assign the role from the form (admin or student)
 
         // Generate a new API token for the user
         $user->api_token = Str::random(60);
@@ -66,13 +68,14 @@ class AuthManagerController extends Controller
         Auth::login($user);
 
         // Redirect the user based on their role
-        if ($user->role === 'admin') {
+        if ($user->hasRole('admin')) {
             return redirect()->route('index')->with('success', 'Welcome Admin!');
         } else {
             return redirect()->route('student.profile')->with('success', 'Welcome Student!');
         }
     }
 
+    // Handle login request
     public function login(Request $request)
     {
         // Validate request input
@@ -92,10 +95,17 @@ class AuthManagerController extends Controller
         if ($user && Hash::check($request->password, $user->password)) {
             // Log the user in
             Auth::login($user);
-    
-            // Check user roles and permissions using dd() for debugging
-            dd($user->getRoleNames()); // This will show all roles assigned to the user
-            dd($user->getAllPermissions()); // This will show all permissions assigned to the user
+
+            // Ensure the user has the correct role (assign if missing)
+            if ($user->role) {
+                $user->assignRole($user->role);  // Assign the user's role dynamically if not already assigned
+            }
+
+            // Debugging: Display the user's roles and permissions
+            dd([
+                'Roles' => $user->getRoleNames(),  // Display all roles assigned to the user
+                'Permissions' => $user->getAllPermissions(),  // Display all permissions assigned to the user
+            ]);
     
             // Generate new API token for the user on login
             $user->api_token = Str::random(60);
@@ -116,7 +126,6 @@ class AuthManagerController extends Controller
         return back()->withErrors(['message' => 'Invalid credentials'])->withInput();
     }
     
-
     // Handle API-based login (for mobile or API clients)
     public function apiLogin(Request $request)
     {
