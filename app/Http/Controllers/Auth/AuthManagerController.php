@@ -83,49 +83,53 @@ class AuthManagerController extends Controller
             'username' => 'required|string',
             'password' => 'required|string|min:6',
         ]);
-    
+
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
         }
-    
+
         // Find user by username
         $user = User::where('username', $request->username)->first();
-    
+        // dd($request->password, $user->password);
+
         // Check if user exists and password is correct
         if ($user && Hash::check($request->password, $user->password)) {
+
             // Log the user in
             Auth::login($user);
 
+
+
             // Ensure the user has the correct role (assign if missing)
-            if ($user->role) {
-                $user->assignRole($user->role);  // Assign the user's role dynamically if not already assigned
-            }
+            // if ($user->hasRole('admin')) {
+            //     $user->assignRole($user->role);  // Assign the user's role dynamically if not already assigned
+            // }
 
             // Debugging: Display the user's roles and permissions
-            dd([
-                'Roles' => $user->getRoleNames(),  // Display all roles assigned to the user
-                'Permissions' => $user->getAllPermissions(),  // Display all permissions assigned to the user
-            ]);
-    
-            // Generate new API token for the user on login
-            $user->api_token = Str::random(60);
-            $user->save();
-    
+            // dd([
+            //     'Roles' => $user->getRoleNames(),  // Display all roles assigned to the user
+            //     'Permissions' => $user->getAllPermissions(),  // Display all permissions assigned to the user
+            // ]);
+
+
+
             // Log the user login event
-            Log::info('User logged in', ['username' => $user->username, 'role' => $user->role]);
-    
+            // Log::info('User logged in', ['username' => $user->username, 'role' => $user->role]);
+
             // Redirect the user based on their role
             if ($user->hasRole('admin')) {
+
                 return redirect()->route('index')->with('success', 'Welcome Admin!');
             } else {
+
                 return redirect()->route('student.profile')->with('success', 'Welcome Student!');
             }
         }
-    
+
         // Return error if login fails
         return back()->withErrors(['message' => 'Invalid credentials'])->withInput();
     }
-    
+
     // Handle API-based login (for mobile or API clients)
     public function apiLogin(Request $request)
     {
