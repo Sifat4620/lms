@@ -32,7 +32,7 @@ Route::get('/', function () {
 
 // Routes protected by authentication middleware
 Route::middleware(['auth'])->group(function () {
-    
+
     // Index Page Route (Dashboard) - Accessible by both admin and student
     Route::get('/index', [IndexController::class, 'index'])->name('index');
 

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Traits\HasRoles;  
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
@@ -14,7 +14,7 @@ class User extends Authenticatable
 
     // Define the columns that are mass-assignable
     protected $fillable = [
-        'username', 
+        'username',
         'name',
         'email',
         'password',
@@ -30,31 +30,4 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-
-    /**
-     * Define the roles relationship.
-     * (This is handled by Spatie's HasRoles trait)
-     */
-    // You can add custom methods for fetching roles or permissions if needed
-    public function roles()
-    {
-        return $this->belongsToMany(\Spatie\Permission\Models\Role::class, 'role_user');
-    }
-
-    /**
-     * Define the permissions relationship.
-     * (This is handled by Spatie's HasRoles trait)
-     */
-    public function permissions()
-    {
-        return $this->belongsToMany(\Spatie\Permission\Models\Permission::class, 'permission_user');
-    }
-
-    /**
-     * Custom method to check if user has a specific permission (can be used in controllers or elsewhere)
-     */
-    public function hasPermission($permission)
-    {
-        return $this->hasPermissionTo($permission);
-    }
 }

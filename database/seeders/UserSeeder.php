@@ -4,19 +4,30 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class UserSeeder extends Seeder
 {
     public function run()
     {
-        // Remove existing user with 'admin' username (if it exists)
-        User::where('username', 'admin')->delete();
 
-        // Now create the admin user
-        User::create([
+        $user =  User::create([
             'username' => 'admin',
             'name' => 'Admin',
-            'password' => bcrypt('password'), // Or use a secure password
+            'email' => 'admin@lms.com',
+            'password' => Hash::make('password'), // Or use a secure password
         ]);
+        $user->assignRole('admin');
+
+
+        $user =  User::create([
+            'username' => 'student',
+            'name' => 'Student',
+            'email' => 'student@lms.com',
+            'password' => Hash::make('password'), // Or use a secure password
+        ]);
+        $user->assignRole('student');
     }
 }
