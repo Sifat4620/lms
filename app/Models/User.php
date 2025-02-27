@@ -30,27 +30,4 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-
-    /**
-     * Define the roles relationship.
-     * (This is handled by Spatie's HasRoles trait)
-     */
-    // You can add custom methods for fetching roles or permissions if needed
-
-    /**
-     * Define the permissions relationship.
-     * (This is handled by Spatie's HasRoles trait)
-     */
-    public function permissions()
-    {
-        return $this->belongsToMany(\Spatie\Permission\Models\Permission::class, 'permission_user');
-    }
-
-    /**
-     * Custom method to check if user has a specific permission (can be used in controllers or elsewhere)
-     */
-    public function hasPermission($permission)
-    {
-        return $this->hasPermissionTo($permission);
-    }
 }
