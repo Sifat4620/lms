@@ -1,9 +1,9 @@
 @extends('Dashboard.main.master')
+
 @section('content')
     <div class="content-body">
         <div class="container">
             <div class="row page-titles">
-               
                 <div class="col p-0">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="javascript:void(0)">Reports</a></li>
@@ -11,6 +11,7 @@
                     </ol>
                 </div>
             </div>
+
             <div class="row">
                 <div class="col-lg-12">
                     <div class="card">
@@ -33,57 +34,43 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <!-- Demo Row 1 -->
-                                        <tr>
-                                            <th>1</th>
-                                            <td>The Great Gatsby</td>
-                                            <td>12345</td>
-                                            <td>BG-2023-001</td>
-                                            <td><span class="badge badge-primary">Borrowed</span></td>
-                                            <td>2025-02-01</td>
-                                            <td>2025-02-15</td>
-                                            <td><span class="badge badge-warning">Need to Order</span></td>
-                                        </tr>
-                                        <!-- Demo Row 2 -->
-                                        <tr>
-                                            <th>2</th>
-                                            <td>1984 by George Orwell</td>
-                                            <td>67890</td>
-                                            <td>BG-2023-002</td>
-                                            <td><span class="badge badge-success">Returned</span></td>
-                                            <td>2025-01-20</td>
-                                            <td>2025-02-05</td>
-                                            <td><span class="badge badge-secondary">No Action</span></td>
-                                        </tr>
-                                        <!-- Demo Row 3 -->
-                                        <tr>
-                                            <th>3</th>
-                                            <td>To Kill a Mockingbird</td>
-                                            <td>54321</td>
-                                            <td>BG-2023-003</td>
-                                            <td><span class="badge badge-danger">Overdue</span></td>
-                                            <td>2025-01-15</td>
-                                            <td>2025-01-30</td>
-                                            <td><span class="badge badge-danger">Urgent Order</span></td>
-                                        </tr>
-                                        <!-- Demo Row 4 -->
-                                        <tr>
-                                            <th>4</th>
-                                            <td>Pride and Prejudice</td>
-                                            <td>11223</td>
-                                            <td>BG-2023-004</td>
-                                            <td><span class="badge badge-primary">Borrowed</span></td>
-                                            <td>2025-02-10</td>
-                                            <td>2025-02-24</td>
-                                            <td><span class="badge badge-warning">Need to Order</span></td>
-                                        </tr>
+                                        @foreach ($borrowedBooks as $index => $borrowedBook)
+                                            <tr>
+                                                <th>{{ $index + 1 }}</th>
+                                                <td>{{ $borrowedBook->book->name }}</td>
+                                                <td>{{ $borrowedBook->user->id }}</td>
+                                                <td>BG-{{ str_pad($borrowedBook->id, 4, '0', STR_PAD_LEFT) }}</td>
+                                                <td>
+                                                    @if (now()->greaterThan($borrowedBook->due_date))
+                                                        <span class="badge badge-danger">Overdue</span>
+                                                    @elseif ($borrowedBook->borrowed_at)
+                                                        <span class="badge badge-primary">Borrowed</span>
+                                                    @else
+                                                        <span class="badge badge-success">Returned</span>
+                                                    @endif
+                                                </td>
+                                                <td>{{ $borrowedBook->borrowed_at->format('Y-m-d') }}</td>
+                                                <td>{{ $borrowedBook->due_date->format('Y-m-d') }}</td>
+                                                <td>
+                                                    @if (now()->greaterThan($borrowedBook->due_date))
+                                                        <span class="badge badge-danger">Urgent Order</span>
+                                                    @elseif ($borrowedBook->borrowed_at)
+                                                        <span class="badge badge-warning">Need to Order</span>
+                                                    @else
+                                                        <span class="badge badge-secondary">No Action</span>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @endforeach
                                     </tbody>
                                 </table>
                             </div>
+
                             <!-- Total Borrowed Books -->
                             <div class="mt-4">
-                                <h5>Total Borrowed Books: 4</h5>
-                                <p>Total Books that Need to be Ordered: 2</p>
+                                <h5>Total Borrowed Books: {{ $borrowedBooks->count() }}</h5>
+                                <p>Total Books that Need to be Ordered: 
+                                    {{ $borrowedBooks->where('due_date', '<', now())->count() }}</p>
                             </div>
                         </div>
                     </div>
