@@ -8,14 +8,26 @@ use App\Models\User;
 
 class BorrowBookController extends Controller
 {
+
     public function index()
     {
-        // Fetch all books from the database (you can filter this based on your requirements)
-        $books = Book::where('status', 'on_store')->get(); // assuming status indicates available books
-
+        // Fetch the authenticated student
+        $student = auth()->user();
+    
+        // Fetch all books that are available for borrowing (status = 'on_store')
+        $books = Book::where('status', 'on_store')->get();
+    
+        // Check if each book is already borrowed by any user
+        foreach ($books as $book) {
+            // Check if the book is borrowed by anyone
+            $book->is_borrowed = $book->borrowers()->exists();  // Check if there are any borrowers
+        }
+    
         // Return the index view with the books data
         return view('Dashboard.main.borrow-book-index', compact('books'));
     }
+    
+    
 
     // This method allows the student to borrow a book
     public function borrowBook(Request $request, $bookId)

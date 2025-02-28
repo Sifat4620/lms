@@ -39,6 +39,7 @@
                                             <th>Book Title</th>
                                             <th>Author</th>
                                             <th>Description</th>
+                                            <th>Status</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
@@ -49,11 +50,21 @@
                                                 <td>{{ $book->writer }}</td>
                                                 <td>{{ $book->description }}</td>
                                                 <td>
-                                                    <!-- Borrow Button -->
-                                                    <form action="{{ route('borrow.book', $book->id) }}" method="POST">
-                                                        @csrf
-                                                        <button type="submit" class="btn btn-primary">Borrow</button>
-                                                    </form>
+                                                    @if ($book->is_borrowed)
+                                                        <span class="badge badge-danger">Borrowed</span>
+                                                    @else
+                                                        <span class="badge badge-success">Available</span>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    @if ($book->is_borrowed)
+                                                        <button class="btn btn-secondary" disabled>Already Borrowed</button>
+                                                    @else
+                                                        <form action="{{ route('borrow.book', $book->id) }}" method="POST">
+                                                            @csrf
+                                                            <button type="submit" class="btn btn-primary">Borrow</button>
+                                                        </form>
+                                                    @endif
                                                 </td>
                                             </tr>
                                         @endforeach
