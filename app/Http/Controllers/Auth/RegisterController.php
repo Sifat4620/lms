@@ -7,7 +7,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class RegisterController extends Controller
 {
@@ -16,11 +17,10 @@ class RegisterController extends Controller
      */
     public function showRegistrationForm()
     {
-        // Prevent already logged-in users from registering
         if (auth()->check()) {
-            return redirect()->route('index'); // Redirect logged-in users to the dashboard
+            return redirect()->route('index'); 
         }
-        return view('Dashboard.main.register'); // The registration page view
+        return view('Dashboard.main.register'); 
     }
 
     /**
@@ -28,60 +28,60 @@ class RegisterController extends Controller
      */
     public function register(Request $request)
     {
+        // Debugging: Check request data before processing
+        // dd($request->all());
+
         // Validate input fields
         $validator = Validator::make($request->all(), [
-            'username' => 'required|string|max:255|unique:users', // Ensure unique username
-            'name' => 'required|string|max:255', // Full name is required
-            'password' => 'required|string|min:8|confirmed', // Ensure strong password and confirmation
+            'name' => 'required|string|max:255',
+            'username' => 'required|string|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
         ]);
 
-        // If validation fails, return with errors
+        // Check validation errors
         if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
+            return back()->withErrors($validator)->withInput()->with('error', 'Validation failed!');
         }
 
-        // Create the user without the 'role' field
-        $user = User::create([
-            'username' => $request->username,
+        // Auto-generate email based on username
+        $generatedEmail = strtolower($request->username) . '@lms.com';
+
+        // Prepare user data
+        $userData = [
             'name' => $request->name,
-            'password' => Hash::make($request->password), // Secure password
-            'api_token' => Str::random(60), // Generate a random API token for the user
-        ]);
-
-        // Assign the role dynamically using Spatie's assignRole method
-        $user->assignRole('student'); // Default role is 'student'
-
-        // Redirect to the login page after successful registration
-        return redirect()->route('login')->with('success', 'Registration successful! Please log in.');
-    }
-
-
-    /**
-     * Handle the API registration (for mobile or API clients).
-     */
-    public function apiRegister(Request $request)
-    {
-        // Validate input fields
-        $request->validate([
-            'username' => 'required|string|max:255|unique:users', // Ensure unique username
-            'name' => 'required|string|max:255', // Full name is required
-            'password' => 'required|string|min:6|confirmed', // Ensure strong password and confirmation
-        ]);
-
-        // Create the user and assign 'student' role by default
-        $user = User::create([
             'username' => $request->username,
-            'name' => $request->name,
-            'password' => Hash::make($request->password), // Secure password
-            'role' => 'student', // Default role is 'student'
-            'api_token' => Str::random(60), // Generate a random API token for the user
+            'email' => $generatedEmail,  // Auto-generated email
+            'password' => Hash::make($request->password),
+        ];
+
+        // Debug: Check user data before insertion
+        // dd($userData);
+
+        // Check database connection before inserting
+        try {
+            \DB::connection()->getPdo();
+        } catch (\Exception $e) {
+            dd('Database connection failed: ' . $e->getMessage());
+        }
+
+        // Create the user
+        $user = User::create($userData);
+
+        // Check if user was created successfully
+        if (!$user) {
+            return back()->with('error', 'User creation failed. Please try again.');
+        }
+
+        // Log user creation
+        Log::info('User registered', [
+            'username' => $user->username,
+            'email' => $user->email,
         ]);
 
-        // Return a JSON response for API clients
-        return response()->json([
-            'message' => 'Registration successful',
-            'user' => $user,
-            'token' => $user->api_token
-        ], 201);
+        // Auto-login the user after registration
+        Auth::login($user);
+
+        // Redirect to dashboard or user profile
+        return redirect()->route('index')->with('success', 'Registration successful! Welcome, ' . $user->name);
     }
 }

@@ -31,49 +31,75 @@ class AuthManagerController extends Controller
         return view('Dashboard.main.page-register');
     }
 
-    // Handle registration request
     public function register(Request $request)
-    {
-        // Validate the request input
+    {   
+        // Debugging: Check request data
+        // dd($request->all());
+
+        // Validate request input
         $validator = Validator::make($request->all(), [
-            'username' => 'required|string|unique:users,username',
-            'name' => 'required|string',
-            'password' => 'required|string|min:6|confirmed',
-            'role' => 'required|in:admin,student',  // Ensure the role is either admin or student
+            'username' => 'required|string|max:255|unique:users',
+            'name' => 'required|string|max:255',
+            'password' => 'required|string|min:8|confirmed',
+            'role' => 'required|in:admin,student',
         ]);
 
-        // If validation fails, return to the registration form with errors
+        // If validation fails, return errors
         if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
+            return back()->withErrors($validator)->withInput()->with('error', 'Validation failed!');
         }
 
-        // Create the user
-        $user = User::create([
+        // Auto-generate email based on username
+        $generatedEmail = strtolower($request->username) . '@lms.com';
+
+        // Prepare user data for insertion
+        $userData = [
             'username' => $request->username,
             'name' => $request->name,
+            'email' => $generatedEmail, // Auto-generated email
             'password' => Hash::make($request->password),
-        ]);
+            'remember_token' => Str::random(10), // Generates remember_token for security
+        ];
+
+        // Debug: Check user data before insertion
+        // dd($userData);
+
+        // Check database connection before inserting
+        try {
+            \DB::connection()->getPdo();
+        } catch (\Exception $e) {
+            dd('Database connection failed: ' . $e->getMessage());
+        }
+
+        // Create user in the database
+        $user = User::create($userData);
+
+        // Check if user was created successfully
+        if (!$user) {
+            return back()->with('error', 'User creation failed. Please try again.');
+        }
 
         // Assign the selected role to the user
-        $user->assignRole($request->role); // This will assign the role from the form (admin or student)
+        $user->assignRole($request->role);
 
-        // Generate a new API token for the user
-        $user->api_token = Str::random(60);
-        $user->save();
+        // Log user creation
+        Log::info('User registered', [
+            'username' => $user->username,
+            'email' => $user->email,
+            'role' => $user->role,
+        ]);
 
-        // Log the user registration event
-        Log::info('User registered', ['username' => $user->username, 'role' => $user->role]);
-
-        // Log the user in after registration
+        // Log in the user after registration
         Auth::login($user);
 
-        // Redirect the user based on their role
+        // Redirect based on role
         if ($user->hasRole('admin')) {
             return redirect()->route('index')->with('success', 'Welcome Admin!');
         } else {
             return redirect()->route('student.profile')->with('success', 'Welcome Student!');
         }
     }
+
 
     // Handle login request
     public function login(Request $request)
@@ -98,23 +124,6 @@ class AuthManagerController extends Controller
             // Log the user in
             Auth::login($user);
 
-
-
-            // Ensure the user has the correct role (assign if missing)
-            // if ($user->hasRole('admin')) {
-            //     $user->assignRole($user->role);  // Assign the user's role dynamically if not already assigned
-            // }
-
-            // Debugging: Display the user's roles and permissions
-            // dd([
-            //     'Roles' => $user->getRoleNames(),  // Display all roles assigned to the user
-            //     'Permissions' => $user->getAllPermissions(),  // Display all permissions assigned to the user
-            // ]);
-
-
-
-            // Log the user login event
-            // Log::info('User logged in', ['username' => $user->username, 'role' => $user->role]);
 
             // Redirect the user based on their role
             if ($user->hasRole('admin')) {
