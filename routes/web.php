@@ -9,6 +9,8 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\Auth\AuthManagerController;
 use App\Http\Controllers\BookListController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\BorrowBookController;
+
 
 // Show login form
 Route::get('/login', [AuthManagerController::class, 'showLoginForm'])->name('login');
@@ -37,6 +39,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/index', [IndexController::class, 'index'])->name('index');
 
         Route::get('/book-form', [BookController::class, 'showFormValidation'])->name('book.form')->middleware(['permission:manage_books-view']);
+
+
+        Route::middleware('auth')->get('/student/borrow-books', [BorrowBookController::class, 'index'])->name('borrow.books');
+
+        // Borrow a book
+        Route::middleware('auth')->post('/student/borrow/{bookId}', [BorrowBookController::class, 'borrowBook'])->name('borrow.book');
+      
+        Route::resource('books', BookController::class);
+
         Route::get('/books', [BookListController::class, 'index'])->name('books.index')->middleware(['permission:manage_books-view']);
 
         Route::get('/students', [StudentController::class, 'index'])->name('students.index')->middleware(['permission:manage_students-view']);

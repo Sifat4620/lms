@@ -19,38 +19,39 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="form-validation">
-                                <form class="form-valide" action="#" method="post">
+                                <form class="form-valide" action="{{ route('books.store') }}" method="POST">
+                                    @csrf
                                     <div class="form-group row">
-                                        <label class="col-lg-4 col-form-label" for="val-username">Books ID <span class="text-danger">*</span></label>
+                                        <label class="col-lg-4 col-form-label" for="book_id">Books ID <span class="text-danger">*</span></label>
                                         <div class="col-lg-6">
-                                            <input type="text" class="form-control" id="val-username" name="val-username" placeholder="Books ID Auto Replace..">
+                                            <input type="text" class="form-control" id="book_id" name="book_id" value="{{ old('book_id', uniqid('BOOK_')) }}" readonly>
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label class="col-lg-4 col-form-label" for="val-email">Books Name <span class="text-danger">*</span></label>
+                                        <label class="col-lg-4 col-form-label" for="name">Books Name <span class="text-danger">*</span></label>
                                         <div class="col-lg-6">
-                                            <input type="text" class="form-control" id="val-email" name="val-email" placeholder="Your Valid Book Name..">
+                                            <input type="text" class="form-control" id="name" name="name" placeholder="Enter book name" value="{{ old('name') }}" required>
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label class="col-lg-4 col-form-label" for="val-suggestions">Book Writer <span class="text-danger">*</span></label>
+                                        <label class="col-lg-4 col-form-label" for="writer">Book Writer <span class="text-danger">*</span></label>
                                         <div class="col-lg-6">
-                                            <textarea class="form-control" id="val-suggestions" name="val-suggestions" rows="5" placeholder="About Your Book Writer"></textarea>
+                                            <textarea class="form-control" id="writer" name="writer" rows="3" placeholder="Enter writer name" required>{{ old('writer') }}</textarea>
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label class="col-lg-4 col-form-label" for="val-skill">Type <span class="text-danger">*</span></label>
+                                        <label class="col-lg-4 col-form-label" for="type">Type <span class="text-danger">*</span></label>
                                         <div class="col-lg-6">
-                                            <select class="form-control" id="val-skill" name="val-skill">
+                                            <select class="form-control" id="type" name="type" required>
                                                 <option value="">Please select</option>
-                                                <option value="html">Horror</option>
-                                                <option value="css">Fantasy</option>
-                                                <option value="javascript">Fairy tales, fables, and folk tales</option>
-                                                <option value="angular">Drama</option>
-                                                <option value="angular">Fable</option>
-                                                <option value="vuejs">Romance</option>
-                                                <option value="ruby">Short Story</option>
-                                                <option value="php">Suspense and Thriller</option>
+                                                <option value="Horror" {{ old('type') == 'Horror' ? 'selected' : '' }}>Horror</option>
+                                                <option value="Fantasy" {{ old('type') == 'Fantasy' ? 'selected' : '' }}>Fantasy</option>
+                                                <option value="Fairy Tales" {{ old('type') == 'Fairy Tales' ? 'selected' : '' }}>Fairy Tales</option>
+                                                <option value="Drama" {{ old('type') == 'Drama' ? 'selected' : '' }}>Drama</option>
+                                                <option value="Fable" {{ old('type') == 'Fable' ? 'selected' : '' }}>Fable</option>
+                                                <option value="Romance" {{ old('type') == 'Romance' ? 'selected' : '' }}>Romance</option>
+                                                <option value="Short Story" {{ old('type') == 'Short Story' ? 'selected' : '' }}>Short Story</option>
+                                                <option value="Suspense and Thriller" {{ old('type') == 'Suspense and Thriller' ? 'selected' : '' }}>Suspense and Thriller</option>
                                             </select>
                                         </div>
                                     </div>
@@ -60,6 +61,15 @@
                                         </div>
                                     </div>
                                 </form>
+                                @if ($errors->any())
+                                    <div class="alert alert-danger">
+                                        <ul>
+                                            @foreach ($errors->all() as $error)
+                                                <li>{{ $error }}</li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -68,4 +78,3 @@
         </div>
     </div>
 @endsection
-

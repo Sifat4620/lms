@@ -1,14 +1,14 @@
 <?php
 
 namespace App\Models;
-
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laratrust\Contracts\LaratrustUser;
 use Laratrust\Traits\HasRolesAndPermissions;
-
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable implements LaratrustUser
 {
@@ -32,4 +32,25 @@ class User extends Authenticatable implements LaratrustUser
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+     * The books that belong to the user.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function borrowedBooks(): BelongsToMany
+    {
+        return $this->belongsToMany(Book::class, 'borrowed_books')
+                    ->withPivot('borrowed_at', 'due_date')
+                    ->withTimestamps();
+    }
+    // public function getBorrowedBooksAttribute($value)
+    // {
+    //     return $this->borrowedBooks->map(function ($book) {
+    //         // Make sure the date fields are Carbon instances
+    //         $book->pivot->borrowed_at = Carbon::parse($book->pivot->borrowed_at);
+    //         $book->pivot->due_date = Carbon::parse($book->pivot->due_date);
+    //         return $book;
+    //     });
+    // }
 }

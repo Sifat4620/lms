@@ -46,6 +46,13 @@
             </li>
 
             @can('borrow_books-view')
+                
+                <li class="nav-item">
+                    <a href="{{ route('borrow.books') }}">
+                        <i class="mdi mdi-book-open-variant"></i>
+                        <span class="nav-text">Borrow Books</span>
+                    </a>
+                </li>
                 <li>
                     <a href="{{ route('student.profile') }}">
                         <i class="mdi mdi-account-circle"></i>
