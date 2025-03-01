@@ -15,22 +15,20 @@ class BorrowBookController extends Controller
     {
         // Fetch the authenticated student
         $student = auth()->user();
-    
+
         // Fetch all books
         $books = Book::all();
-    
-        // Check if each book is already borrowed or available
+
+        // Check if each book is borrowed
         foreach ($books as $book) {
-            if ($book->status === 'on_store') {
-                $book->availability_status = 'Available';
-            } else {
-                $book->availability_status = 'Borrowed';
-            }
+            $book->is_borrowed = \DB::table('borrowed_books')->where('book_id', $book->id)->exists();
         }
-    
-        // Return the index view with the books data
-        return view('Dashboard.main.borrow-book-index', compact('books'));
+
+        // Pass the student variable to the view
+        return view('Dashboard.main.borrow-book-index', compact('books', 'student'));
     }
+
+    
     
     
 
@@ -40,13 +38,31 @@ class BorrowBookController extends Controller
         // Get the authenticated student
         $student = auth()->user();
 
+        // Check if the student has an active membership
+        if (!$student->membership) {
+            return redirect()->back()->with('error', 'You need a membership to borrow books.');
+        }
+
         // Find the book by ID
         $book = Book::findOrFail($bookId);
 
         // Check if the student has already borrowed the book
-        // Fix the ambiguity issue by using table alias
         if ($student->borrowedBooks()->where('borrowed_books.book_id', $book->id)->exists()) {
             return redirect()->back()->with('error', 'You have already borrowed this book.');
+        }
+
+        // Get membership details
+        $membership = $student->membership;
+        $membershipFeatures = json_decode($membership->features, true);
+
+        // Check the borrowing limit based on membership type
+        if ($membership->name === 'Basic') {
+            $maxBooks = 3; // Basic members can borrow up to 3 books
+            $currentBorrowed = $student->borrowedBooks()->count();
+
+            if ($currentBorrowed >= $maxBooks) {
+                return redirect()->back()->with('error', 'You have reached your borrowing limit. Upgrade to Premium for unlimited borrowing.');
+            }
         }
 
         // Borrow the book: add entry in the pivot table 'borrowed_books'
@@ -62,6 +78,7 @@ class BorrowBookController extends Controller
 
         return redirect()->back()->with('success', 'You have successfully borrowed the book!');
     }
+
 
     
     // This method allows the student to Return a book
