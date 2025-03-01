@@ -64,6 +64,8 @@ Route::middleware(['auth'])->group(function () {
 
         // Student borrow book route
         Route::get('/student/borrow-book', [StudentController::class, 'borrowBook'])->name('student.borrow.book');
+       
+        Route::post('/books/return/{book}', [BorrowBookController::class, 'returnBook'])->name('books.return');
 
 
         Route::get('/upgrade', [MembershipController::class, 'showUpgradePage'])->name('upgrade');

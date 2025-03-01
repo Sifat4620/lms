@@ -33,93 +33,98 @@
 
                                     {{-- Membership Section --}}
 
-                                    <h6>Membership:</h6>
-@if ($student->membership)
-    <p><strong>Plan:</strong> {{ $student->membership->name }}</p>
-    <p><strong>Fee:</strong> {{ $student->membership->price }} Tk</p>
-    <p><strong>Features:</strong></p>
-    <ul>
-        @foreach (json_decode($student->membership->features) as $feature)
-            <li>{{ $feature }}</li>
-        @endforeach
-    </ul>
-@else
-    <p class="text-danger"><strong>No Membership Assigned</strong></p>
-    
-    <!-- Upgrade Membership Button -->
-    <button type="button" class="btn btn-primary" onclick="showUpgradePopup()">
-        Upgrade Membership
-    </button>
-@endif
+                                            <h6>Membership:</h6>
+                                            @if ($student->membership)
+                                                <p><strong>Plan:</strong> {{ $student->membership->name }}</p>
+                                                
+                                                {{-- Extra Fee code --}}
+                                                <p><strong>Fee:</strong> {{ $student->membership->price }} Tk</p>
+                                                {{-- Extra Fee code --}}
+                                                <p><strong>End Date:</strong> {{ \Carbon\Carbon::parse($student->membership->start_date)->addMonth()->diffForHumans() }}</p>
+                                            
+                                                <p><strong>Features:</strong></p>
+                                                <ul>
+                                                    @foreach (json_decode($student->membership->features) as $feature)
+                                                        <li>{{ $feature }}</li>
+                                                    @endforeach
+                                                </ul>
+                                            @else
+                                                <p class="text-danger"><strong>No Membership Assigned</strong></p>
+                                                
+                                                <!-- Upgrade Membership Button -->
+                                                <button type="button" class="btn btn-primary" onclick="showUpgradePopup()">
+                                                    Upgrade Membership
+                                                </button>
+                                            @endif
 
-<h6>Wallet Balance: {{ $student->balance }} Tk</h6>
+                                            <h6>Wallet Balance: {{ $student->balance }} Tk</h6>
 
-<!-- Deposit Money Form -->
-<form action="{{ route('wallet.deposit') }}" method="POST">
-    @csrf
-    <input type="number" name="amount" placeholder="Enter amount" required class="form-control">
-    <button type="submit" class="btn btn-success mt-2">Deposit Money</button>
-</form>
+                                            <!-- Deposit Money Form -->
+                                            <form action="{{ route('wallet.deposit') }}" method="POST">
+                                                @csrf
+                                                <input type="number" name="amount" placeholder="Enter amount" required class="form-control">
+                                                <button type="submit" class="btn btn-success mt-2">Deposit Money</button>
+                                            </form>
 
-<!-- SweetAlert JavaScript -->
-<script>
-    function showUpgradePopup() {
-        Swal.fire({
-            title: 'Upgrade Membership',
-            text: 'Are you sure you want to upgrade your membership?',
-            icon: 'info',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, Upgrade',
-            cancelButtonText: 'Cancel'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    title: 'Select Membership',
-                    input: 'select',
-                    inputOptions: {
-                        @foreach ($memberships as $membership)
-                            {{ $membership->id }}: '{{ $membership->name }} - {{ $membership->price }} Tk',
-                        @endforeach
-                    },
-                    inputPlaceholder: 'Choose a plan',
-                    showCancelButton: true,
-                    confirmButtonText: 'Upgrade Now',
-                    cancelButtonText: 'Cancel'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        let membershipId = result.value;
-                        let membershipPrice = @json($memberships->pluck('price', 'id'))[membershipId];
-                        let userBalance = {{ $student->balance }};
-                        
-                        if (userBalance >= membershipPrice) {
-                            let form = document.createElement('form');
-                            form.method = 'POST';
-                            form.action = "{{ route('upgrade.post') }}";
-                            form.innerHTML = `
-                                @csrf
-                                <input type="hidden" name="membership_id" value="${membershipId}">
-                            `;
-                            document.body.appendChild(form);
-                            form.submit();
-                        } else {
-                            Swal.fire({
-                                title: 'Insufficient Balance',
-                                text: 'You need to deposit more money to upgrade your membership.',
-                                icon: 'warning',
-                                confirmButtonText: 'Deposit Now'
-                            }).then(() => {
-                                document.querySelector('[name="amount"]').focus();
-                            });
-                        }
-                    }
-                });
-            }
-        });
-    }
-</script>
+                                            <!-- SweetAlert JavaScript -->
+                                            <script>
+                                                function showUpgradePopup() {
+                                                    Swal.fire({
+                                                        title: 'Upgrade Membership',
+                                                        text: 'Are you sure you want to upgrade your membership?',
+                                                        icon: 'info',
+                                                        showCancelButton: true,
+                                                        confirmButtonText: 'Yes, Upgrade',
+                                                        cancelButtonText: 'Cancel'
+                                                    }).then((result) => {
+                                                        if (result.isConfirmed) {
+                                                            Swal.fire({
+                                                                title: 'Select Membership',
+                                                                input: 'select',
+                                                                inputOptions: {
+                                                                    @foreach ($memberships as $membership)
+                                                                        {{ $membership->id }}: '{{ $membership->name }} - {{ $membership->price }} Tk',
+                                                                    @endforeach
+                                                                },
+                                                                inputPlaceholder: 'Choose a plan',
+                                                                showCancelButton: true,
+                                                                confirmButtonText: 'Upgrade Now',
+                                                                cancelButtonText: 'Cancel'
+                                                            }).then((result) => {
+                                                                if (result.isConfirmed) {
+                                                                    let membershipId = result.value;
+                                                                    let membershipPrice = @json($memberships->pluck('price', 'id'))[membershipId];
+                                                                    let userBalance = {{ $student->balance }};
+                                                                    
+                                                                    if (userBalance >= membershipPrice) {
+                                                                        let form = document.createElement('form');
+                                                                        form.method = 'POST';
+                                                                        form.action = "{{ route('upgrade.post') }}";
+                                                                        form.innerHTML = `
+                                                                            @csrf
+                                                                            <input type="hidden" name="membership_id" value="${membershipId}">
+                                                                        `;
+                                                                        document.body.appendChild(form);
+                                                                        form.submit();
+                                                                    } else {
+                                                                        Swal.fire({
+                                                                            title: 'Insufficient Balance',
+                                                                            text: 'You need to deposit more money to upgrade your membership.',
+                                                                            icon: 'warning',
+                                                                            confirmButtonText: 'Deposit Now'
+                                                                        }).then(() => {
+                                                                            document.querySelector('[name="amount"]').focus();
+                                                                        });
+                                                                    }
+                                                                }
+                                                            });
+                                                        }
+                                                    });
+                                                }
+                                            </script>
 
-<!-- Include SweetAlert -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                                            <!-- Include SweetAlert -->
+                                            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
                                     {{-- Membership Section --}}
@@ -136,6 +141,7 @@
                                             <li>{{ $permission->display_name }}</li>
                                         @endforeach
                                     </ul>
+
                                 </div>
                                 
                                 <div class="col-lg-6">
@@ -146,6 +152,7 @@
                                                 <th>Book Title</th>
                                                 <th>Borrowed On</th>
                                                 <th>Due Date</th>
+                                                <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -166,11 +173,19 @@
                                                             N/A
                                                         @endif
                                                     </td>
+                                                    <td>
+                                                        <form action="{{ route('books.return', $book->id) }}" method="POST" style="display: inline;">
+                                                            @csrf
+                                                            @method('POST')
+                                                            <button type="submit" class="btn btn-danger btn-sm">Return</button>
+                                                        </form>
+                                                    </td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
                                     </table>
                                 </div>
+                                
                             </div> 
                         </div>
                     </div>

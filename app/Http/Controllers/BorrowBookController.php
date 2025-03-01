@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\User;
 
+
+
 class BorrowBookController extends Controller
 {
 
@@ -14,13 +16,16 @@ class BorrowBookController extends Controller
         // Fetch the authenticated student
         $student = auth()->user();
     
-        // Fetch all books that are available for borrowing (status = 'on_store')
-        $books = Book::where('status', 'on_store')->get();
+        // Fetch all books
+        $books = Book::all();
     
-        // Check if each book is already borrowed by any user
+        // Check if each book is already borrowed or available
         foreach ($books as $book) {
-            // Check if the book is borrowed by anyone
-            $book->is_borrowed = $book->borrowers()->exists();  // Check if there are any borrowers
+            if ($book->status === 'on_store') {
+                $book->availability_status = 'Available';
+            } else {
+                $book->availability_status = 'Borrowed';
+            }
         }
     
         // Return the index view with the books data
@@ -57,5 +62,29 @@ class BorrowBookController extends Controller
 
         return redirect()->back()->with('success', 'You have successfully borrowed the book!');
     }
+
+    
+    // This method allows the student to Return a book
+    public function returnBook($bookId)
+    {
+        $student = auth()->user();
+
+        // Use the table alias for clarity
+        $book = $student->borrowedBooks()->where('borrowed_books.book_id', $bookId)->first();
+
+        if (!$book) {
+            return redirect()->back()->with('error', 'You have not borrowed this book.');
+        }
+
+        // Detach book from student
+        $student->borrowedBooks()->detach($bookId);
+
+        // Update book status to 'available'
+        Book::where('id', $bookId)->update(['status' => 'available']);
+
+        return redirect()->back()->with('success', 'Book returned successfully!');
+    }
+
+
 
 }
