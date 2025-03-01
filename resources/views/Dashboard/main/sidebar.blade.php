@@ -67,6 +67,13 @@
                         <span class="nav-text">Permission Management</span>
                     </a>
                 </li>
+
+                <li>
+                    <a href="{{ route('invoice') }}">
+                        <i class="mdi mdi-square-edit-outline"></i>
+                        <span class="nav-text">Invoice Summary</span>
+                    </a>
+                </li>
        @endrole
             <!-- Invoice Section (commented out) -->
             {{--

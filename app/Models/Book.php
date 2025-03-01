@@ -25,4 +25,5 @@ class Book extends Model
                     ->withPivot('borrowed_at', 'due_date')
                     ->withTimestamps();
     }
+    
 }

@@ -38,7 +38,10 @@ class StudentController extends Controller
 
         // Get the borrowed books for the student
         $borrowedBooks = $student->borrowedBooks; // This will retrieve the books the user has borrowed
+        $memberships = \App\Models\Membership::all();
 
-        return view('Dashboard.main.student-profile', compact('student', 'borrowedBooks'));
+
+        return view('Dashboard.main.student-profile', compact('student', 'borrowedBooks', 'memberships'));
+
     }
 }

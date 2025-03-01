@@ -44,13 +44,8 @@ class User extends Authenticatable implements LaratrustUser
                     ->withPivot('borrowed_at', 'due_date')
                     ->withTimestamps();
     }
-    // public function getBorrowedBooksAttribute($value)
-    // {
-    //     return $this->borrowedBooks->map(function ($book) {
-    //         // Make sure the date fields are Carbon instances
-    //         $book->pivot->borrowed_at = Carbon::parse($book->pivot->borrowed_at);
-    //         $book->pivot->due_date = Carbon::parse($book->pivot->due_date);
-    //         return $book;
-    //     });
-    // }
+    public function membership()
+    {
+        return $this->belongsTo(\App\Models\Membership::class);
+    }
 }

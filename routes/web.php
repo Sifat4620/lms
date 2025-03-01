@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\AuthManagerController;
 use App\Http\Controllers\BookListController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\BorrowBookController;
+use App\Http\Controllers\MembershipController;
 
 
 // Show login form
@@ -62,6 +63,13 @@ Route::middleware(['auth'])->group(function () {
 
         // Student borrow book route
         Route::get('/student/borrow-book', [StudentController::class, 'borrowBook'])->name('student.borrow.book');
+
+
+        Route::get('/upgrade', [MembershipController::class, 'showUpgradePage'])->name('upgrade');
+        
+        Route::post('/upgrade', [MembershipController::class, 'upgrade'])->name('upgrade.post');
+        
+        Route::get('/invoice', [InvoiceController::class, 'index'])->name('invoice');
 
 });
 
