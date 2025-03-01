@@ -16,16 +16,41 @@ class StudentController extends Controller
      */
     public function index()
     {
-        // Fetch users with the "student" role, eager load roles and permissions
+        // Fetch students with the "student" role, including memberships and borrowed books
         $students = User::whereHas('roles', function ($query) {
-            $query->where('name', 'student');  // Filter by role name "student"
-        })
-        ->with(['roles', 'permissions']) // Eager load roles and permissions
-        ->get();
+                $query->where('name', 'student');
+            })
+            ->with(['roles', 'permissions', 'membership', 'borrowedBooks' => function ($query) {
+                $query->withPivot('borrowed_at', 'due_date');
+            }])
+            ->get();
 
-        // Pass the students data to the view
+        // Process student data for membership, borrowed books, and fine calculations
+        foreach ($students as $student) {
+            // Determine membership status
+            $student->membership_status = $student->membership ? $student->membership->name : 'No Membership';
+
+            // Count borrowed books
+            $student->borrowed_books_count = $student->borrowedBooks->count();
+
+            // Calculate total fine
+            $student->total_fine = 0;
+            foreach ($student->borrowedBooks as $book) {
+                $borrowedDate = \Carbon\Carbon::parse($book->pivot->borrowed_at);
+                $dueDate = $borrowedDate->copy()->addDays(15); // Ensures due date is 15 days from borrowed_at
+                $today = now();
+
+                if ($today->greaterThan($dueDate)) {
+                    $daysOverdue = $dueDate->diffInDays($today);
+                    $student->total_fine += $daysOverdue * 50; // 50 Tk per day fine
+                }
+            }
+        }
+
         return view('Dashboard.main.student-list', compact('students'));
     }
+
+
 
 
     /**

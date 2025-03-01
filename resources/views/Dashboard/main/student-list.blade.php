@@ -31,6 +31,9 @@
                                             <th>ID</th>
                                             <th>Student ID</th>
                                             <th>Student Name</th>
+                                            <th>Membership</th>
+                                            <th>Books Borrowed</th>
+                                            <th>Total Fine</th>
                                             <th>Roles</th>
                                             <th>Permissions</th>
                                             <th>Status</th>
@@ -43,6 +46,21 @@
                                                 <td>{{ $student->id }}</td>
                                                 <td>{{ $student->username }}</td>
                                                 <td class="color-primary">{{ $student->name }}</td>
+                                                <td>
+                                                    @if ($student->membership)
+                                                        <span class="badge bg-success">{{ $student->membership->name }}</span>
+                                                    @else
+                                                        <span class="badge bg-danger">No Membership</span>
+                                                    @endif
+                                                </td>
+                                                <td class="text-center fw-bold">{{ $student->borrowed_books_count }}</td>
+                                                <td class="text-center">
+                                                    @if ($student->total_fine > 0)
+                                                        <span class="text-danger">{{ number_format($student->total_fine, 2) }} Tk</span>
+                                                    @else
+                                                        <span class="text-success">No Fine</span>
+                                                    @endif
+                                                </td>
                                                 <td>
                                                     @foreach ($student->roles as $role)
                                                         {{ $role->display_name }}<br>
