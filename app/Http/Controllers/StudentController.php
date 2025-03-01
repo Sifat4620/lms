@@ -33,15 +33,29 @@ class StudentController extends Controller
      */
     public function profile()
     {
-        // Fetch the authenticated user
+        // Fetch the authenticated student
         $student = auth()->user();
-
+    
         // Get the borrowed books for the student
-        $borrowedBooks = $student->borrowedBooks; // This will retrieve the books the user has borrowed
+        $borrowedBooks = $student->borrowedBooks;
         $memberships = \App\Models\Membership::all();
-
-
-        return view('Dashboard.main.student-profile', compact('student', 'borrowedBooks', 'memberships'));
-
+    
+        // Initialize fine calculation
+        $fineAmount = 0;
+    
+        foreach ($borrowedBooks as $book) {
+            $borrowedDate = \Carbon\Carbon::parse($book->pivot->borrowed_at);
+            $dueDate = $borrowedDate->copy()->addDays(15); // Ensures due_date is exactly 15 days from borrowed_at
+            $today = now();
+            
+            // Check if overdue
+            if ($today->greaterThan($dueDate)) {
+                $daysOverdue = $dueDate->diffInDays($today);
+                $fineAmount += $daysOverdue * 50; // 50 Tk per day fine
+            }
+        }
+    
+        return view('Dashboard.main.student-profile', compact('student', 'borrowedBooks', 'memberships', 'fineAmount'));
     }
+    
 }

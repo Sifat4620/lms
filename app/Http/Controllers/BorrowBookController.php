@@ -11,6 +11,8 @@ use App\Models\User;
 class BorrowBookController extends Controller
 {
 
+
+    // This method allows the  to borrow a book index
     public function index()
     {
         // Fetch the authenticated student
@@ -28,8 +30,6 @@ class BorrowBookController extends Controller
         return view('Dashboard.main.borrow-book-index', compact('books', 'student'));
     }
 
-    
-    
     
 
     // This method allows the student to borrow a book
