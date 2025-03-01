@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Membership;
 use Auth;
 use App\Models\MembershipRecord;
+use Bavix\Wallet\Facades\Wallet;
 
 
 class MembershipController extends Controller
@@ -40,21 +41,17 @@ class MembershipController extends Controller
             return back()->with('error', 'Invalid membership plan.');
         }
 
-        // Check if the user already has an active membership
-        $existingRecord = MembershipRecord::where('user_id', $user->id)
-                                        ->where('is_active', true)
-                                        ->latest('end_date')
-                                        ->first();
-
-        if ($existingRecord && Carbon::now()->lessThan($existingRecord->end_date)) {
-            // If the user upgrades before expiry, extend the current end_date by 1 month
-            $startDate = $existingRecord->end_date;
-            $endDate = $startDate->copy()->addMonth();
-        } else {
-            // New membership or expired membership
-            $startDate = Carbon::now();
-            $endDate = $startDate->copy()->addMonth();
+        // Check if the user has enough balance
+        if ($user->balance < $membership->price) {
+            return back()->with('error', 'Insufficient balance. Please deposit funds.');
         }
+
+        // Deduct balance from the user's wallet
+        $user->withdraw($membership->price);
+
+        // Set membership start and end date (1-month validity)
+        $startDate = now();
+        $endDate = $startDate->copy()->addMonth();
 
         // Save membership record
         MembershipRecord::create([
@@ -70,6 +67,6 @@ class MembershipController extends Controller
         $user->membership_id = $membership->id;
         $user->save();
 
-        return redirect()->back()->with('success', 'Membership upgraded successfully! Valid until ' . $endDate->format('d-m-Y'));
+        return redirect()->back()->with('success', 'Membership upgraded successfully!');
     }
 }

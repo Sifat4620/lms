@@ -11,6 +11,7 @@ use App\Http\Controllers\BookListController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\BorrowBookController;
 use App\Http\Controllers\MembershipController;
+use App\Http\Controllers\WalletController;
 
 
 // Show login form
@@ -70,6 +71,9 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/upgrade', [MembershipController::class, 'upgrade'])->name('upgrade.post');
         
         Route::get('/invoice', [InvoiceController::class, 'index'])->name('invoice');
+
+
+        Route::post('/wallet/deposit', [WalletController::class, 'deposit'])->name('wallet.deposit');
 
 });
 

@@ -1,5 +1,5 @@
 <?php
-
+namespace App\Models;
 namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,10 +10,16 @@ use Laratrust\Contracts\LaratrustUser;
 use Laratrust\Traits\HasRolesAndPermissions;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-class User extends Authenticatable implements LaratrustUser
-{
-    use HasFactory, Notifiable,HasRolesAndPermissions; // Include Spatie's HasRoles trait to handle roles & permissions
+use Bavix\Wallet\Traits\HasWallet;
+use Bavix\Wallet\Interfaces\Wallet;
 
+
+
+class User extends Authenticatable implements LaratrustUser , Wallet
+
+{
+    use HasFactory, Notifiable,HasRolesAndPermissions,HasWallet; // Include Spatie's HasRoles trait to handle roles & permissions
+    
     // Define the columns that are mass-assignable
     protected $fillable = [
         'username',
@@ -48,4 +54,6 @@ class User extends Authenticatable implements LaratrustUser
     {
         return $this->belongsTo(\App\Models\Membership::class);
     }
+
+    
 }
