@@ -68,12 +68,12 @@
                     </a>
                 </li>
 
-                <li>
+                {{-- <li>
                     <a href="{{ route('invoice') }}">
                         <i class="mdi mdi-square-edit-outline"></i>
                         <span class="nav-text">Invoice Summary</span>
                     </a>
-                </li>
+                </li> --}}
        @endrole
             <!-- Invoice Section (commented out) -->
             {{--

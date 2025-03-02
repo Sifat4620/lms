@@ -1,0 +1,110 @@
+University Library Management System
+Overview
+The University Library Management System is a web application developed using Laravel (PHP framework), MySQL, and additional technologies like Laravel Trust, Laravel Wallet, and a Linux-based server. This system allows efficient management of books, memberships, borrowing, and financial transactions in a university library.
+
+Key Features:
+📋 Admin Role: Full access to manage users, books, and generate reports.
+👨‍🎓 Student Role: Allows students to sign up, borrow books, and manage membership types (Basic or Premium).
+📚 Book Borrowing System: Books can be borrowed for 15 days; late fees of 50 TK per day are applied.
+🏅 Memberships: Basic and Premium memberships with different borrowing limits and prices.
+📦 Pre-Order System: Admins can track books that need to be pre-ordered.
+💳 Laravel Wallet: Payment system to manage fines and membership fees.
+Tech Stack
+🔧 Backend Framework: Laravel
+🗃️ Database: MySQL
+💰 Payment System: Laravel Wallet
+🔐 Security: Laravel Trust
+🖥️ Server OS: Linux (Ubuntu preferred)
+Installation
+Prerequisites
+Before running the application, ensure you have the following installed:
+
+📦 PHP >= 7.4
+⚙️ Composer
+🗃️ MySQL
+🖥️ Laravel 8.x or later
+🌐 Nginx or Apache (for serving the app)
+1. Clone the repository
+bash
+Copy
+git clone https://github.com/yourusername/university-library-management.git
+cd university-library-management
+2. Install dependencies
+Run the following command to install all required PHP packages via Composer:
+
+bash
+Copy
+composer install
+3. Set up environment variables
+Copy the .env.example file to .env:
+
+bash
+Copy
+cp .env.example .env
+Edit the .env file to configure your environment settings, such as the database connection.
+
+Example:
+
+plaintext
+Copy
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=library_system
+DB_USERNAME=root
+DB_PASSWORD=yourpassword
+4. Generate application key
+Run the following command to generate a new application key:
+
+bash
+Copy
+php artisan key:generate
+5. Set up the database
+Run the migrations to set up the database schema:
+
+bash
+Copy
+php artisan migrate
+If you want to seed the database with some sample data (optional):
+
+bash
+Copy
+php artisan db:seed
+6. Install front-end dependencies
+Install the required JavaScript and CSS dependencies:
+
+bash
+Copy
+npm install
+npm run dev
+7. Set up Laravel Wallet and Laravel Trust
+Follow the installation guide for Laravel Wallet: Laravel Wallet Documentation
+For Laravel Trust, make sure to configure it properly for role-based access control: Laravel Trust Documentation
+8. Set up your server (Nginx/Apache)
+Configure your web server (e.g., Nginx or Apache) to serve the application. Ensure that your server points to the public directory of the Laravel project.
+
+Usage
+Admin Panel
+🔑 Log in as the Main Admin (created during initial setup) to manage system-wide settings, user accounts, and reports.
+🖥️ Additional admins can be created, but they need permission from the main admin.
+Student Panel
+📝 Sign Up: Students can register and create their accounts.
+💳 Membership: Choose between Basic and Premium membership types.
+📚 Borrow Books: Borrow books for up to 15 days. Late fees will be charged if overdue.
+💸 View Fines: Students can view and pay fines through the integrated wallet system.
+Features
+Admin Features:
+🛠️ Create Admin Accounts: Admins can create new admin accounts with role-based permissions.
+📚 Book Management: Add, edit, and remove books from the library.
+📝 Pre-order Management: Track and report books that need to be pre-ordered.
+📊 Reports: View reports on borrowing activities, overdue books, and financial transactions.
+Student Features:
+✍️ Sign Up: Students can sign up and create their accounts.
+🏅 Membership: Choose between Basic and Premium membership types.
+📚 Borrow Books: Borrow books for up to 15 days. Late fees will be charged if overdue.
+💳 View Fines: Students can view and pay fines through the integrated wallet system.
+Contributing
+If you would like to contribute to this project, feel free to fork the repository and submit a pull request. Please ensure that your code follows the Laravel coding standards and passes all tests.
+
+License
+This project is open source and available under the MIT License.
