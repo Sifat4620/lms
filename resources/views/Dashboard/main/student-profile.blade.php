@@ -153,3 +153,60 @@
         </div>
     </div>
 @endsection
+<!-- SweetAlert JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function showUpgradePopup() {
+        Swal.fire({
+            title: 'Upgrade Membership',
+            text: 'Are you sure you want to upgrade your membership?',
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Upgrade',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: 'Select Membership',
+                    input: 'select',
+                    inputOptions: {
+                        @foreach ($memberships as $membership)
+                            {{ $membership->id }}: '{{ $membership->name }} - {{ $membership->price }} Tk',
+                        @endforeach
+                    },
+                    inputPlaceholder: 'Choose a plan',
+                    showCancelButton: true,
+                    confirmButtonText: 'Upgrade Now',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        let membershipId = result.value;
+                        let membershipPrice = @json($memberships->pluck('price', 'id'))[membershipId];
+                        let userBalance = {{ $student->balance }};
+                        
+                        if (userBalance >= membershipPrice) {
+                            let form = document.createElement('form');
+                            form.method = 'POST';
+                            form.action = "{{ route('upgrade.post') }}";
+                            form.innerHTML = `
+                                @csrf
+                                <input type="hidden" name="membership_id" value="${membershipId}">
+                            `;
+                            document.body.appendChild(form);
+                            form.submit();
+                        } else {
+                            Swal.fire({
+                                title: 'Insufficient Balance',
+                                text: 'You need to deposit more money to upgrade your membership.',
+                                icon: 'warning',
+                                confirmButtonText: 'Deposit Now'
+                            }).then(() => {
+                                document.querySelector('[name="amount"]').focus();
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    }
+</script>
