@@ -13,7 +13,7 @@ class BookController extends Controller
     // Show book form validation view
     public function showFormValidation()
     {
-        return view('Dashboard.main.form-validation');
+        return view('Dashboard.main.book-create');
     }
 
     // Display a list of books
