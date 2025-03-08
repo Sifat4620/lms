@@ -58,26 +58,14 @@
                                                 </td>
                                                 
                                                 <td>
-                                                    @if ($student && !$student->membership)
-                                                        <!-- Display nothing if no membership -->
-                                                        N/A
-                                                    @elseif ($book->is_borrowed)
-                                                        <!-- Check if the current student is the one who borrowed the book -->
-                                                        @php
-                                                            $borrowedBook = \App\Models\BorrowedBook::where('book_id', $book->id)->where('user_id', $student->id)->first();
-                                                        @endphp
-                                                        @if ($borrowedBook)
-                                                            <!-- Show the return date from the 'due_date' field -->
-                                                            {{ \Carbon\Carbon::parse($borrowedBook->due_date)->format('d M Y') }}
-                                                        @else
-                                                            <!-- Display nothing if the student didn't borrow the book -->
-                                                            N/A
-                                                        @endif
+                                                    @if ($book->is_borrowed)
+                                                        {{ \Carbon\Carbon::parse($book->due_date)->format('d M Y') }}
                                                     @else
-                                                        <!-- Display nothing if the book is not borrowed by the student -->
                                                         N/A
                                                     @endif
                                                 </td>
+                                                
+                                                
 
                                                 <td>
                                                     @if ($student && !$student->membership)

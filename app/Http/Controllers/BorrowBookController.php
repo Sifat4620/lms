@@ -17,18 +17,27 @@ class BorrowBookController extends Controller
     {
         // Fetch the authenticated student
         $student = auth()->user();
-
+    
         // Fetch all books
         $books = Book::all();
-
-        // Check if each book is borrowed
+    
+        // Check if each book is borrowed and fetch the borrowed data
         foreach ($books as $book) {
             $book->is_borrowed = \DB::table('borrowed_books')->where('book_id', $book->id)->exists();
+            
+            // Fetch the correct borrowed data including the due_date
+            $borrowedData = \DB::table('borrowed_books')->where('book_id', $book->id)->first();
+            $book->borrowed_by = $borrowedData ? $borrowedData->user_id : null;
+            $book->due_date = $borrowedData ? $borrowedData->due_date : null;
         }
-
-        // Pass the student variable to the view
+    
+        // Debugging: Ensure due_date is correct in the books array
+        // dd($books);
+    
+        // Pass the data to the view
         return view('Dashboard.main.borrow-book-index', compact('books', 'student'));
     }
+    
 
     
 
