@@ -56,12 +56,6 @@ class BookController extends Controller
         return view('books.show', compact('book'));
     }
 
-    // Show edit form for a book
-    public function edit(Book $book)
-    {
-        return view('books.edit', compact('book'));
-    }
-
     // Update a book's information
     public function update(Request $request, Book $book)
     {
@@ -76,6 +70,16 @@ class BookController extends Controller
 
         return redirect()->route('books.index')->with('success', 'Book updated successfully!');
     }
+
+    public function edit($id)
+    {
+        // Retrieve the book by its ID
+        $book = Book::findOrFail($id);
+        
+        // Pass the book data to the book-create view
+        return view('Dashboard.main.book-create', compact('book'));
+    }
+
 
     // Delete a book
     public function destroy(Book $book)

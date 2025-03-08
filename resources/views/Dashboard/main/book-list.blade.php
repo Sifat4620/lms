@@ -30,6 +30,7 @@
                                             <th>Book ID</th>
                                             <th>Status</th>
                                             <th>Entry Date</th>
+                                            <th>Actions</th> <!-- New column for actions -->
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -44,6 +45,15 @@
                                                     </span>
                                                 </td>
                                                 <td>{{ $book->created_at->format('d M') }}</td>
+                                                <td> <!-- Action buttons -->
+                                                    <a href="{{ route('books.edit', $book->id) }}" class="btn btn-warning btn-sm">Edit</a>
+                                            <form action="{{ route('books.destroy', $book->id) }}" method="POST" style="display:inline;">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                            </form>
+
+                                                </td>
                                             </tr>
                                         @endforeach
                                     </tbody>

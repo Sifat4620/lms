@@ -52,6 +52,7 @@
     
     <!-- Custom dashboard script -->
     <script src="{{ asset('js/dashboard.1.js') }}"></script>
+    
 </body>
 
 </html>

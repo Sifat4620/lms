@@ -52,6 +52,10 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('/books', [BookListController::class, 'index'])->name('books.index')->middleware(['permission:manage_books-view']);
 
+        // In routes/web.php
+
+        Route::get('/books/{book}/edit', [BookController::class, 'edit'])->name('books.edit');
+
         Route::get('/students', [StudentController::class, 'index'])->name('students.index')->middleware(['permission:manage_students-view']);
 
 

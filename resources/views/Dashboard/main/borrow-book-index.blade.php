@@ -39,6 +39,7 @@
                                             <th>Author</th>
                                             <th>Description</th>
                                             <th>Status</th>
+                                            <th>Return Date</th> <!-- New column -->
                                             <th>Action</th>
                                         </tr>
                                     </thead>
@@ -55,6 +56,20 @@
                                                         <span class="badge bg-success">Available</span>
                                                     @endif
                                                 </td>
+                                                
+                                                <td>
+                                                    @if ($student && !$student->membership)
+                                                        <!-- Display nothing if no membership -->
+                                                        N/A
+                                                    @elseif ($book->is_borrowed && $book->borrowed_by == $student->id)
+                                                        <!-- Show the return date from the 'due_date' field -->
+                                                        {{ \Carbon\Carbon::parse($book->due_date)->format('d M Y') }}
+                                                    @else
+                                                        <!-- Display nothing if the book is not borrowed by the student -->
+                                                        N/A
+                                                    @endif
+                                                </td>
+
                                                 <td>
                                                     @if ($student && !$student->membership)
                                                         <button class="btn btn-warning" disabled data-bs-toggle="tooltip" title="You need a membership to borrow books">
@@ -71,7 +86,6 @@
                                                         </form>
                                                     @endif
                                                 </td>
-                                                
                                             </tr>
                                         @endforeach
                                     </tbody>
