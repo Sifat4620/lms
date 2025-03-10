@@ -133,13 +133,24 @@
                                                     @endif
                                                 </td>
                                                 <td>
-                                                    <form action="{{ route('books.return', $book->id) }}" method="POST">
-                                                        @csrf
-                                                        <button type="submit" class="btn btn-danger btn-sm">
-                                                            {{ $isOverdue ? 'Pay Fine' : 'Return' }}
-                                                        </button>
-                                                    </form>
+                                                    @if ($isOverdue)
+                                                        @if ($student->balance >= $fineAmount)
+                                                            <form action="{{ route('books.return', $book->id) }}" method="POST">
+                                                                @csrf
+                                                                <button type="submit" class="btn btn-danger btn-sm">Pay Fine</button>
+                                                            </form>
+                                                        @else
+                                                            <button class="btn btn-danger btn-sm" disabled>Insufficient Balance</button>
+                                                            <p class="text-danger">Please add balance</p>
+                                                        @endif
+                                                    @else
+                                                        <form action="{{ route('books.return', $book->id) }}" method="POST">
+                                                            @csrf
+                                                            <button type="submit" class="btn btn-success btn-sm">Return</button>
+                                                        </form>
+                                                    @endif
                                                 </td>
+                                                
                                             </tr>
                                         @endforeach
                                     </tbody>
