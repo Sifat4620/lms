@@ -132,13 +132,15 @@
                                                         <span class="text-success">No Fine</span>
                                                     @endif
                                                 </td>
+                                                
                                                 <td>
                                                     @if ($isOverdue)
                                                         @if ($student->balance >= $fineAmount)
-                                                            <form action="{{ route('books.return', $book->id) }}" method="POST">
+                                                            <form action="{{ route('books.payFine', ['bookId' => $book->id, 'fineAmount' => $fineAmount]) }}" method="POST">
                                                                 @csrf
                                                                 <button type="submit" class="btn btn-danger btn-sm">Pay Fine</button>
                                                             </form>
+                                                        
                                                         @else
                                                             <button class="btn btn-danger btn-sm" disabled>Insufficient Balance</button>
                                                             <p class="text-danger">Please add balance</p>
@@ -150,6 +152,7 @@
                                                         </form>
                                                     @endif
                                                 </td>
+                                                
                                                 
                                             </tr>
                                         @endforeach

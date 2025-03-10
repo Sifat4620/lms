@@ -69,4 +69,6 @@ class MembershipController extends Controller
 
         return redirect()->back()->with('success', 'Membership upgraded successfully!');
     }
+     
+    
 }
