@@ -135,7 +135,9 @@
                                                 <td>
                                                     <form action="{{ route('books.return', $book->id) }}" method="POST">
                                                         @csrf
-                                                        <button type="submit" class="btn btn-danger btn-sm">Return</button>
+                                                        <button type="submit" class="btn btn-danger btn-sm">
+                                                            {{ $isOverdue ? 'Pay Fine' : 'Return' }}
+                                                        </button>
                                                     </form>
                                                 </td>
                                             </tr>
